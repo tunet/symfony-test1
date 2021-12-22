@@ -1,0 +1,37 @@
+version: '3.9'
+
+services:
+    database:
+        image: mysql:5.7
+        command: --sql_mode=""
+        environment:
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+            MYSQL_DATABASE: ${DB_NAME}
+        ports:
+            - '3395:3306'
+        volumes: 
+            - ./:/srv/app
+
+    php:
+        build:
+            context: .
+            dockerfile: docker/php/Dockerfile
+            args:
+                LINUX_USER_ID: ${LINUX_USER_ID}
+        volumes:
+            - ./docker/php/php.ini:/usr/local/etc/php/php.ini
+            # - ./docker/cron/crontab:/var/spool/cron/crontabs/crontab
+            - ./:/srv/app
+            - ./.env:/srv/app/.env
+        depends_on:
+            - database
+        tty: true
+
+    nginx:
+        image: nginx:1.20-alpine
+        volumes:
+            - ./public/:/srv/app/public
+        depends_on:
+            - php
+        ports:
+            - '8010:80'
