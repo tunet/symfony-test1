@@ -20,7 +20,6 @@ services:
                 LINUX_USER_ID: ${LINUX_USER_ID}
         volumes:
             - ./docker/php/php.ini:/usr/local/etc/php/php.ini
-            # - ./docker/cron/crontab:/var/spool/cron/crontabs/crontab
             - ./:/srv/app
             - ./.env:/srv/app/.env
         depends_on:
